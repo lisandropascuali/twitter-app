@@ -81,6 +81,16 @@ func TestUserHandler_Follow(t *testing.T) {
 				"error": "Failed to follow user",
 			},
 		},
+		{
+			name:           "already following",
+			followerID:     "user1",
+			followedID:     "user2",
+			mockError:      nil,
+			expectedStatus: fiber.StatusBadRequest,
+			expectedBody: map[string]interface{}{
+				"error": "User is already following this user",
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -88,7 +98,9 @@ func TestUserHandler_Follow(t *testing.T) {
 			app, mockUsecase, handler := setupTest()
 			app.Post("/:followedID/follow", handler.Follow)
 
-			if tt.followerID != "" {
+			if tt.name == "already following" {
+				mockUsecase.On("GetFollowing", tt.followerID).Return([]domain.User{{ID: tt.followedID, Username: "user2"}}, nil)
+			} else if tt.followerID != "" {
 				mockUsecase.On("Follow", tt.followerID, tt.followedID).Return(tt.mockError)
 			}
 

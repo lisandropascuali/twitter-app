@@ -37,6 +37,15 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Get followers list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -84,6 +93,15 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Get following list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -138,6 +156,13 @@ const docTemplate = `{
                         "name": "followedID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -186,6 +211,13 @@ const docTemplate = `{
                         "description": "ID of the user to unfollow",
                         "name": "followedID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     }
                 ],

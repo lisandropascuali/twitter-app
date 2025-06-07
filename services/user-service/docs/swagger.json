@@ -34,6 +34,15 @@
                     "users"
                 ],
                 "summary": "Get followers list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -81,6 +90,15 @@
                     "users"
                 ],
                 "summary": "Get following list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -135,6 +153,13 @@
                         "name": "followedID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -183,6 +208,13 @@
                         "description": "ID of the user to unfollow",
                         "name": "followedID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
                         "required": true
                     }
                 ],

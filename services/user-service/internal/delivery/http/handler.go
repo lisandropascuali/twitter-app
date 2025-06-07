@@ -25,7 +25,7 @@ func NewUserHandler(uu domain.UserUsecase) *UserHandler {
 // @Accept json
 // @Produce json
 // @Param followedID path string true "ID of the user to follow"
-// @Header 200 {string} X-User-ID "ID of the current user"
+// @Param X-User-ID header string true "ID of the current user"
 // @Success 200 {object} map[string]interface{}
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
@@ -38,6 +38,22 @@ func (h *UserHandler) Follow(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "User ID is required",
 		})
+	}
+
+	// Check if the user is already following the target user
+	following, err := h.userUsecase.GetFollowing(followerID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to check following status",
+		})
+	}
+
+	for _, user := range following {
+		if user.ID == followedID {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "User is already following this user",
+			})
+		}
 	}
 
 	if err := h.userUsecase.Follow(followerID, followedID); err != nil {
@@ -56,7 +72,7 @@ func (h *UserHandler) Follow(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param followedID path string true "ID of the user to unfollow"
-// @Header 200 {string} X-User-ID "ID of the current user"
+// @Param X-User-ID header string true "ID of the current user"
 // @Success 200 {object} map[string]interface{}
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
@@ -86,7 +102,7 @@ func (h *UserHandler) Unfollow(c *fiber.Ctx) error {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Header 200 {string} X-User-ID "ID of the current user"
+// @Param X-User-ID header string true "ID of the current user"
 // @Success 200 {object} map[string][]domain.User
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
@@ -118,7 +134,7 @@ func (h *UserHandler) GetFollowing(c *fiber.Ctx) error {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Header 200 {string} X-User-ID "ID of the current user"
+// @Param X-User-ID header string true "ID of the current user"
 // @Success 200 {object} map[string][]domain.User
 // @Failure 401 {object} map[string]string
 // @Failure 500 {object} map[string]string
