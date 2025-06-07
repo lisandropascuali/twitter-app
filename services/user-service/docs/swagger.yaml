@@ -1,0 +1,155 @@
+basePath: /api/v1
+definitions:
+  github_com_lisandro_challenge_services_user-service_internal_domain.User:
+    properties:
+      id:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the user service API documentation.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: User Service API
+  version: "1.0"
+paths:
+  /users/{followedID}/follow:
+    delete:
+      consumes:
+      - application/json
+      description: Unfollow another user by their ID
+      parameters:
+      - description: ID of the user to unfollow
+        in: path
+        name: followedID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Unfollow a user
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Follow another user by their ID
+      parameters:
+      - description: ID of the user to follow
+        in: path
+        name: followedID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Follow a user
+      tags:
+      - users
+  /users/followers:
+    get:
+      consumes:
+      - application/json
+      description: Get the list of users that follow the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/github_com_lisandro_challenge_services_user-service_internal_domain.User'
+              type: array
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get followers list
+      tags:
+      - users
+  /users/following:
+    get:
+      consumes:
+      - application/json
+      description: Get the list of users that the current user follows
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/github_com_lisandro_challenge_services_user-service_internal_domain.User'
+              type: array
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get following list
+      tags:
+      - users
+schemes:
+- http
+swagger: "2.0"
