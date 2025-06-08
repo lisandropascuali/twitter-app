@@ -30,7 +30,8 @@ graph TB
         subgraph Data Storage
             RDS[(RDS PostgreSQL)]
             REDIS[(ElastiCache Redis)]
-            CASS[(Cassandra)]
+            DDB[(DynamoDB)]
+            OS[(OpenSearch)]
         end
         
         subgraph Message Bus
@@ -54,13 +55,12 @@ graph TB
     US --> RDS
     US --> REDIS
     
-    TS --> RDS
+    TS --> DDB
     TS --> REDIS
-    TS --> SNS
     
+    TLS --> OS
     TLS --> REDIS
-    TLS --> CASS
-    TLS --> SQS
+    TLS --> DDB
     
     SNS --> SQS
     
@@ -74,20 +74,14 @@ sequenceDiagram
     participant C as Client
     participant AG as API Gateway
     participant TS as Tweet Service
-    participant SNS as SNS Topic
-    participant SQS as SQS Queue
-    participant TLS as Timeline Service
-    participant RDS as PostgreSQL
+    participant DDB as DynamoDB
     participant R as Redis Cache
 
     C->>AG: POST /tweets
     AG->>TS: Create Tweet
-    TS->>RDS: Store Tweet
-    TS->>SNS: Publish Tweet Event
-    SNS->>SQS: Forward to Queue
-    TLS->>SQS: Consume Tweet Event
-    TLS->>R: Update Timeline Cache
-    TLS->>AG: Tweet Created
+    TS->>DDB: Store Tweet
+    TS->>R: Update Tweet Cache
+    TS->>AG: Tweet Created
     AG->>C: Success Response
 ```
 
@@ -99,7 +93,8 @@ sequenceDiagram
     participant AG as API Gateway
     participant TLS as Timeline Service
     participant R as Redis Cache
-    participant CASS as Cassandra
+    participant OS as OpenSearch
+    participant DDB as DynamoDB
 
     C->>AG: GET /timeline
     AG->>TLS: Request Timeline
@@ -107,8 +102,10 @@ sequenceDiagram
     alt Cache Hit
         R->>TLS: Return Cached Timeline
     else Cache Miss
-        TLS->>CASS: Fetch Timeline
-        CASS->>TLS: Return Timeline Data
+        TLS->>OS: Query Timeline
+        OS->>TLS: Return Timeline IDs
+        TLS->>DDB: Fetch Tweet Details
+        DDB->>TLS: Return Tweet Data
         TLS->>R: Update Cache
     end
     TLS->>AG: Timeline Data
@@ -124,14 +121,11 @@ sequenceDiagram
     participant US as User Service
     participant RDS as PostgreSQL
     participant R as Redis Cache
-    participant SNS as SNS Topic
 
     C->>AG: POST /follow
     AG->>US: Follow Request
     US->>RDS: Update Follow Relationship
     US->>R: Update Cache
-    US->>SNS: Publish Follow Event
-    SNS->>US: Success
     US->>AG: Follow Success
     AG->>C: Success Response
 ```
@@ -142,7 +136,8 @@ sequenceDiagram
 graph LR
     subgraph Primary Storage
         RDS[(RDS PostgreSQL)]
-        CASS[(Cassandra)]
+        DDB[(DynamoDB)]
+        OS[(OpenSearch)]
     end
     
     subgraph Cache Layer
@@ -158,10 +153,11 @@ graph LR
     US --> RDS
     US --> RC
     
-    TS --> RDS
+    TS --> DDB
     TS --> RC
     
-    TLS --> CASS
+    TLS --> OS
+    TLS --> DDB
     TLS --> RC
 ```
 

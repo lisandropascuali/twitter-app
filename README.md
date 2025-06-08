@@ -5,11 +5,13 @@ This project implements a scalable, resilient, and high-performance Twitter-like
 
 ## Tech Stack
 - **Programming Language**: Go (Golang)
-- **Database**: PostgreSQL (Primary data store)
+- **Databases**: 
+  - DynamoDB (Tweet storage)
+  - OpenSearch (Timeline and search)
+  - PostgreSQL (User data)
 - **Cloud Provider**: AWS
 - **Architecture Pattern**: Clean Architecture
 - **Infrastructure**: Docker + Kubernetes
-- **Message Broker**: AWS SNS / SQS
 - **Caching**: Redis
 
 ## System Architecture
@@ -30,19 +32,18 @@ This project implements a scalable, resilient, and high-performance Twitter-like
    - Tweet validation
    - Tweet storage and retrieval
    - Technologies:
-     - PostgreSQL for tweet storage
+     - DynamoDB for tweet storage
      - Redis for hot tweets caching
-     - SNS / SQS for event streaming
 
 3. **Timeline Service**
    - Timeline generation and management
    - Feed aggregation
    - Technologies:
+     - OpenSearch for timeline queries and search
      - Redis for timeline caching
-     - SNS / SQS for real-time updates
-     - Cassandra for timeline storage
+     - DynamoDB for tweet data retrieval
 
-5. **API Gateway**
+4. **API Gateway**
    - Request routing
    - Rate limiting
    - Authentication & Authorization
@@ -54,27 +55,47 @@ This project implements a scalable, resilient, and high-performance Twitter-like
 
 1. **Tweet Creation Flow**
    ```
-   Client -> API Gateway -> Tweet Service -> SNS / SQS -> Timeline Service
-                                        -> PostgreSQL
+   Client -> API Gateway -> Tweet Service -> DynamoDB
+                                        -> Redis Cache
    ```
 
 2. **Timeline Retrieval Flow**
    ```
-   Client -> API Gateway -> Timeline Service -> Redis (Cache)
-                                           -> Cassandra (If cache miss)
+   Client -> API Gateway -> Timeline Service -> Redis Cache
+                                           -> OpenSearch (if cache miss)
+                                           -> DynamoDB (for tweet details)
    ```
+
+### Data Storage Strategy
+
+1. **Tweet Storage**
+   - **DynamoDB**: Primary storage for tweets
+     - Stores complete tweet data
+     - Optimized for tweet retrieval by ID
+     - Enables fast access to individual tweets
+   
+   - **OpenSearch**: Timeline and search optimization
+     - Stores tweet metadata and content for search
+     - Optimized for timeline queries and full-text search
+     - Enables efficient timeline generation and search capabilities
+
+2. **Data Access Pattern**
+   - Fanout on read strategy
+   - Timeline Service queries OpenSearch for timeline data
+   - DynamoDB provides tweet details on demand
+   - Redis cache provides fast access to recent timelines
+   - Eventual consistency model for timeline updates
 
 ### Scalability Considerations
 
 1. **Read Optimization**
    - Aggressive caching with Redis
-   - Timeline pre-computation
+   - OpenSearch for efficient timeline queries
    - Read replicas for PostgreSQL
    - Content Delivery Network (CDN) for static content
 
 2. **Write Scalability**
-   - Event-driven architecture using SNS / SQS
-   - Database sharding
+   - DynamoDB for high-throughput tweet storage
    - Asynchronous processing for non-critical operations
 
 3. **High Availability**
