@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -24,6 +25,16 @@ func NewTweetUseCase(repo domain.TweetRepository, searchRepo domain.SearchReposi
 
 // CreateTweet creates a new tweet for a user
 func (u *tweetUsecase) CreateTweet(userID uuid.UUID, content string) (*domain.Tweet, error) {
+	// Validate content length (Twitter-like limit of 240 characters)
+	if len(content) > 240 {
+		return nil, errors.New("tweet content cannot exceed 240 characters")
+	}
+	
+	// Validate content is not empty
+	if len(content) == 0 {
+		return nil, errors.New("tweet content cannot be empty")
+	}
+
 	tweet := &domain.Tweet{
 		ID:        uuid.New(),
 		UserID:    userID,

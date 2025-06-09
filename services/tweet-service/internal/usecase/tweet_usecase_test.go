@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -202,5 +203,78 @@ func TestGetTweetsByUsersID_SearchError(t *testing.T) {
 	assert.Nil(t, tweets)
 	assert.Equal(t, assert.AnError, err)
 
+	mockSearchRepo.AssertExpectations(t)
+}
+
+func TestCreateTweet_ContentTooLong(t *testing.T) {
+	// Setup
+	mockRepo := new(MockTweetRepository)
+	mockSearchRepo := new(MockSearchRepository)
+	usecase := NewTweetUseCase(mockRepo, mockSearchRepo)
+
+	userID := uuid.New()
+	// Create content longer than 240 characters
+	content := strings.Repeat("a", 241)
+
+	// Execute
+	tweet, err := usecase.CreateTweet(userID, content)
+
+	// Assert
+	assert.Error(t, err)
+	assert.Nil(t, tweet)
+	assert.Contains(t, err.Error(), "tweet content cannot exceed 240 characters")
+
+	// Verify that no repository methods were called
+	mockRepo.AssertNotCalled(t, "Create")
+	mockSearchRepo.AssertNotCalled(t, "IndexTweet")
+}
+
+func TestCreateTweet_EmptyContent(t *testing.T) {
+	// Setup
+	mockRepo := new(MockTweetRepository)
+	mockSearchRepo := new(MockSearchRepository)
+	usecase := NewTweetUseCase(mockRepo, mockSearchRepo)
+
+	userID := uuid.New()
+	content := ""
+
+	// Execute
+	tweet, err := usecase.CreateTweet(userID, content)
+
+	// Assert
+	assert.Error(t, err)
+	assert.Nil(t, tweet)
+	assert.Contains(t, err.Error(), "tweet content cannot be empty")
+
+	// Verify that no repository methods were called
+	mockRepo.AssertNotCalled(t, "Create")
+	mockSearchRepo.AssertNotCalled(t, "IndexTweet")
+}
+
+func TestCreateTweet_ExactlyMaxLength(t *testing.T) {
+	// Setup
+	mockRepo := new(MockTweetRepository)
+	mockSearchRepo := new(MockSearchRepository)
+	usecase := NewTweetUseCase(mockRepo, mockSearchRepo)
+
+	userID := uuid.New()
+	// Create content exactly 240 characters
+	content := strings.Repeat("a", 240)
+
+	// Expectations
+	mockRepo.On("Create", mock.AnythingOfType("*domain.Tweet")).Return(nil)
+	mockSearchRepo.On("IndexTweet", mock.AnythingOfType("*domain.Tweet")).Return(nil)
+
+	// Execute
+	tweet, err := usecase.CreateTweet(userID, content)
+
+	// Assert
+	assert.NoError(t, err)
+	assert.NotNil(t, tweet)
+	assert.Equal(t, userID, tweet.UserID)
+	assert.Equal(t, content, tweet.Content)
+	assert.Len(t, tweet.Content, 240)
+
+	mockRepo.AssertExpectations(t)
 	mockSearchRepo.AssertExpectations(t)
 } 
