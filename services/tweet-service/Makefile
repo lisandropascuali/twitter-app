@@ -1,4 +1,4 @@
-.PHONY: up down restart build run test clean seed migrate wait-for-postgres
+.PHONY: up down restart build run test clean create-table check-aws-cli
 
 # Docker compose commands
 up:
@@ -13,7 +13,7 @@ restart: down up
 build:
 	go build -o bin/tweet-service cmd/api/main.go
 
-run: up wait-for-postgres
+run: up create-table
 	go run cmd/api/main.go
 
 # Testing commands
@@ -34,25 +34,19 @@ deps:
 	go mod tidy
 	go mod download
 
-# Wait for PostgreSQL to be ready
-wait-for-postgres:
-	@echo "Waiting for PostgreSQL to be ready..."
-	@until docker exec tweet-service-postgres-1 pg_isready -h localhost -p 5432 -U tweet_service; do \
-		echo "PostgreSQL is unavailable - sleeping"; \
-		sleep 1; \
-	done
-	@echo "PostgreSQL is ready"
-	@sleep 2
-
-# Run database migrations
-migrate: wait-for-postgres
-	@echo "Running database migrations..."
-	@docker exec -i tweet-service-postgres-1 psql -U tweet_service -d tweets < scripts/migrations.sql
-
-# Seed database with mock data
-seed: migrate
-	@echo "Populating database with sample tweets..."
-	@docker exec -i tweet-service-postgres-1 psql -U tweet_service -d tweets < scripts/seed.sql
+# Check if AWS CLI is installed
+check-aws-cli:
+	@if ! command -v aws &> /dev/null; then \
+		echo "AWS CLI is not installed. Please install it first:"; \
+		echo "  - For macOS: brew install awscli"; \
+		echo "  - For Linux: pip install awscli"; \
+		exit 1; \
+	fi
+# Create DynamoDB table
+create-table: check-aws-cli
+	@echo "Creating DynamoDB table..."
+	@chmod +x scripts/create-table.sh
+	@./scripts/create-table.sh
 
 # Build Docker image
 docker-build:

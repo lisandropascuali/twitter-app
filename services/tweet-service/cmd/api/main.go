@@ -1,19 +1,20 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/lisandro/challenge/services/tweet-service/config"
-	_ "github.com/lisandro/challenge/services/tweet-service/docs"
 	"github.com/lisandro/challenge/services/tweet-service/internal/delivery/http"
-	pgRepo "github.com/lisandro/challenge/services/tweet-service/internal/repository/postgres"
+	dynamorepo "github.com/lisandro/challenge/services/tweet-service/internal/repository/dynamodb"
 	"github.com/lisandro/challenge/services/tweet-service/internal/usecase"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 // @title Tweet Service API
@@ -28,38 +29,34 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8081
-// @BasePath /api/v1
+// @host localhost:8080
+// @BasePath /
 // @schemes http
 
 func main() {
 	config.InitLogger()
-	log.Println("Starting user service...")
+	log.Println("Starting tweet service...")
 
-	// Initialize PostgreSQL connection
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		getEnvOrDefault("DB_HOST", "localhost"),
-		getEnvOrDefault("DB_USER", "user_service"),
-		getEnvOrDefault("DB_PASSWORD", "user_service_pass"),
-		getEnvOrDefault("DB_NAME", "user_service_db"),
-		getEnvOrDefault("DB_PORT", "5432"),
+	// Initialize AWS SDK with static credentials for LocalStack
+	awsCfg, err := awsconfig.LoadDefaultConfig(context.Background(),
+		awsconfig.WithRegion(getEnvOrDefault("AWS_REGION", "us-east-1")),
+		awsconfig.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(
+			getEnvOrDefault("AWS_ACCESS_KEY_ID", "test"),
+			getEnvOrDefault("AWS_SECRET_ACCESS_KEY", "test"),
+			"",
+		)),
 	)
-
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to load AWS config: %v", err)
 	}
 
-	// Run migrations
-	if err := pgRepo.RunMigrations(db); err != nil {
-		log.Fatalf("Failed to run migrations: %v", err)
-	}
+	// Initialize DynamoDB client with custom endpoint
+	dynamoClient := dynamodb.NewFromConfig(awsCfg, func(o *dynamodb.Options) {
+		o.BaseEndpoint = aws.String(getEnvOrDefault("DYNAMODB_ENDPOINT", "http://localhost:4566"))
+	})
 
 	// Initialize repositories
-	tweetRepo := pgRepo.NewTweetRepository(db)
-	if err != nil {
-		log.Fatalf("Failed to create SNS client: %v", err)
-	}
+	tweetRepo := dynamorepo.NewTweetRepository(dynamoClient, getEnvOrDefault("DYNAMODB_TABLE", "tweets"))
 
 	// Initialize usecase with its dependencies
 	tweetUsecase := usecase.NewTweetUseCase(tweetRepo)

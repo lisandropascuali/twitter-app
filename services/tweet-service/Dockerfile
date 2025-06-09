@@ -1,5 +1,13 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.21-alpine
+
+# Install AWS CLI and required dependencies
+RUN apk add --no-cache \
+    python3 \
+    py3-pip \
+    curl \
+    bash \
+    && pip3 install --no-cache-dir awscli
 
 WORKDIR /app
 
@@ -13,7 +21,7 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/api
+RUN go build -o main cmd/api/main.go
 
 # Final stage
 FROM alpine:latest

@@ -1,18 +1,28 @@
+version: '3.8'
+
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: tweet_service
-      POSTGRES_PASSWORD: tweet_service_pass
-      POSTGRES_DB: tweet_service_db
+  localstack:
+    image: localstack/localstack:latest
     ports:
-      - "5433:5432"
+      - "4566:4566"
+    environment:
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LAMBDA_EXECUTOR=local
+      - PERSISTENCE=1
+      - SERVICES=dynamodb
+      - DEFAULT_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - EDGE_PORT=4566
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tweet_service"]
+      test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 10s
+
 volumes:
-  postgres_data:
+  localstack-data:
