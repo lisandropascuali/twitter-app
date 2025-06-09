@@ -1,4 +1,4 @@
-.PHONY: up down restart build run test clean create-table check-aws-cli
+.PHONY: up down restart build run test clean create-table check-aws-cli create-opensearch-index
 
 # Docker compose commands
 up:
@@ -13,7 +13,7 @@ restart: down up
 build:
 	go build -o bin/tweet-service cmd/api/main.go
 
-run: up create-table
+run: up create-table create-opensearch-index
 	go run cmd/api/main.go
 
 # Testing commands
@@ -42,11 +42,18 @@ check-aws-cli:
 		echo "  - For Linux: pip install awscli"; \
 		exit 1; \
 	fi
+
 # Create DynamoDB table
 create-table: check-aws-cli
 	@echo "Creating DynamoDB table..."
 	@chmod +x scripts/create-table.sh
 	@./scripts/create-table.sh
+
+# Create OpenSearch index
+create-opensearch-index:
+	@echo "Creating OpenSearch index..."
+	@chmod +x scripts/create-opensearch-index.sh
+	@./scripts/create-opensearch-index.sh
 
 # Build Docker image
 docker-build:

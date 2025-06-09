@@ -1,6 +1,9 @@
 package http
 
 import (
+	"strconv"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/lisandro/challenge/services/tweet-service/internal/domain"
@@ -75,4 +78,54 @@ func (h *Handler) CreateTweet(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusCreated).JSON(tweet)
+}
+
+// GetTweetsByUsersID godoc
+// @Summary Get tweets by user IDs
+// @Description Get tweets from a list of user IDs with pagination
+// @Tags tweets
+// @Accept json
+// @Produce json
+// @Param user_ids query []string true "List of user IDs"
+// @Param page query int false "Page number (default: 1)"
+// @Param page_size query int false "Page size (default: 10)"
+// @Success 200 {array} Tweet
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /tweets/following [get]
+func (h *Handler) GetTweetsByUsersID(c *fiber.Ctx) error {
+	userIDsStr := c.Query("user_ids")
+	if userIDsStr == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "user_ids parameter is required"})
+	}
+
+	userIDs := make([]uuid.UUID, 0)
+	for _, idStr := range strings.Split(userIDsStr, ",") {
+		id, err := uuid.Parse(strings.TrimSpace(idStr))
+		if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "invalid user ID format"})
+		}
+		userIDs = append(userIDs, id)
+	}
+
+	page := 1
+	if pageStr := c.Query("page"); pageStr != "" {
+		if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+			page = p
+		}
+	}
+
+	pageSize := 10
+	if pageSizeStr := c.Query("page_size"); pageSizeStr != "" {
+		if ps, err := strconv.Atoi(pageSizeStr); err == nil && ps > 0 {
+			pageSize = ps
+		}
+	}
+
+	tweets, err := h.tweetUseCase.GetTweetsByUsersID(userIDs, page, pageSize)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: "failed to get tweets"})
+	}
+
+	return c.JSON(tweets)
 }

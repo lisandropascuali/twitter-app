@@ -25,6 +25,20 @@ func RegisterRoutes(app *fiber.App, handler *Handler) {
 	// @Router /tweets [post]
 	tweets.Post("", handler.CreateTweet)
 
+	// @Summary Get tweets by user IDs
+	// @Description Get tweets from a list of user IDs with pagination
+	// @Tags tweets
+	// @Accept json
+	// @Produce json
+	// @Param user_ids query []string true "List of user IDs"
+	// @Param page query int false "Page number (default: 1)"
+	// @Param page_size query int false "Page size (default: 10)"
+	// @Success 200 {array} domain.Tweet
+	// @Failure 400 {object} map[string]string
+	// @Failure 500 {object} map[string]string
+	// @Router /tweets/following [get]
+	tweets.Get("/following", handler.GetTweetsByUsersID)
+
 	// Health check endpoint
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{

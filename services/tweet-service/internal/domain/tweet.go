@@ -20,7 +20,13 @@ type TweetRepository interface {
 	Create(tweet *Tweet) error
 }
 
+type SearchRepository interface {
+	GetTweetsByUsersID(userIDs []uuid.UUID, page, pageSize int) ([]Tweet, error)
+	IndexTweet(tweet *Tweet) error
+}
+
 // TweetUseCase defines the interface for tweet business logic
 type TweetUseCase interface {
 	CreateTweet(userID uuid.UUID, content string) (*Tweet, error)
+	GetTweetsByUsersID(userIDs []uuid.UUID, page, pageSize int) ([]Tweet, error)
 } 

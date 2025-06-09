@@ -14,7 +14,9 @@ import (
 	"github.com/lisandro/challenge/services/tweet-service/config"
 	"github.com/lisandro/challenge/services/tweet-service/internal/delivery/http"
 	dynamorepo "github.com/lisandro/challenge/services/tweet-service/internal/repository/dynamodb"
+	opensearchrepo "github.com/lisandro/challenge/services/tweet-service/internal/repository/opensearch"
 	"github.com/lisandro/challenge/services/tweet-service/internal/usecase"
+	"github.com/opensearch-project/opensearch-go/v2"
 )
 
 // @title Tweet Service API
@@ -55,11 +57,20 @@ func main() {
 		o.BaseEndpoint = aws.String(getEnvOrDefault("DYNAMODB_ENDPOINT", "http://localhost:4566"))
 	})
 
+	// Initialize OpenSearch client
+	opensearchClient, err := opensearch.NewClient(opensearch.Config{
+		Addresses: []string{getEnvOrDefault("OPENSEARCH_ENDPOINT", "http://localhost:9200")},
+	})
+	if err != nil {
+		log.Fatalf("Failed to create OpenSearch client: %v", err)
+	}
+
 	// Initialize repositories
 	tweetRepo := dynamorepo.NewTweetRepository(dynamoClient, getEnvOrDefault("DYNAMODB_TABLE", "tweets"))
+	searchRepo := opensearchrepo.NewSearchRepository(opensearchClient)
 
 	// Initialize usecase with its dependencies
-	tweetUsecase := usecase.NewTweetUseCase(tweetRepo)
+	tweetUsecase := usecase.NewTweetUseCase(tweetRepo, searchRepo)
 
 	// Initialize HTTP server with its dependencies
 	server := http.NewServer(tweetUsecase)
