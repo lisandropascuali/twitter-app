@@ -19,6 +19,7 @@ func RegisterRoutes(app *fiber.App, handler *Handler) {
 	// @Accept json
 	// @Produce json
 	// @Param tweet body CreateTweetRequest true "Tweet object"
+	// @Header 200 {string} X-User-ID "ID of the current user"
 	// @Success 201 {object} map[string]interface{}
 	// @Failure 400 {object} map[string]string
 	// @Failure 500 {object} map[string]string

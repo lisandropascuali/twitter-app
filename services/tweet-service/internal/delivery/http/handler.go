@@ -27,7 +27,6 @@ type Tweet struct {
 // CreateTweetRequest represents the request body for creating a tweet
 // @Description Request body for creating a tweet
 type CreateTweetRequest struct {
-	UserID  uuid.UUID `json:"user_id" binding:"required" example:"123e4567-e89b-12d3-a456-426614174000"`
 	Content string    `json:"content" binding:"required" example:"Hello, this is my first tweet!"`
 }
 
@@ -72,7 +71,18 @@ func (h *Handler) CreateTweet(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: err.Error()})
 	}
 
-	tweet, err := h.tweetUseCase.CreateTweet(req.UserID, req.Content)
+	userID := c.Get("X-User-ID")
+
+	if userID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "user_id is required"})
+	}
+
+	userIDUUID, err := uuid.Parse(userID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{Error: "invalid user_id format"})
+	}
+
+	tweet, err := h.tweetUseCase.CreateTweet(userIDUUID, req.Content)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(ErrorResponse{Error: err.Error()})
 	}
