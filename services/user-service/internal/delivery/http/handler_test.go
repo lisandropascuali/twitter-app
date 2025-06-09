@@ -117,6 +117,7 @@ func TestUserHandler_Follow(t *testing.T) {
 			if tt.name == "already following" {
 				mockUsecase.On("GetFollowing", tt.followerID).Return([]domain.User{{ID: tt.followedID, Username: "user2"}}, nil)
 			} else if tt.followerID != "" {
+				mockUsecase.On("GetFollowing", tt.followerID).Return([]domain.User{}, nil)
 				mockUsecase.On("Follow", tt.followerID, tt.followedID).Return(tt.mockError)
 			}
 
