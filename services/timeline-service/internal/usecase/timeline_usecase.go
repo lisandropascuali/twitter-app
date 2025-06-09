@@ -35,10 +35,20 @@ func (uc *timelineUseCase) GetTimeline(ctx context.Context, userID string) (*dom
 		return nil, err
 	}
 	log.Printf("Found %d following users for user %s", len(followingUsers), userID)
+	
+	// If user follows no one, return empty timeline
+	if len(followingUsers) == 0 {
+		log.Printf("User %s follows no one, returning empty timeline", userID)
+		return &domain.Timeline{
+			Tweets: []domain.Tweet{},
+		}, nil
+	}
+	
 	var followingUserIDs []string
 	for _, followingUser := range followingUsers {
 		followingUserIDs = append(followingUserIDs, followingUser.ID)
 	}
+	
 	// Get tweets for each following user
 	log.Printf("Fetching tweets for following user %s", followingUserIDs)
 	tweets, err := uc.tweetClient.GetUserTweets(ctx, followingUserIDs)

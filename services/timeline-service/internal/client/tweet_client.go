@@ -28,6 +28,13 @@ func NewTweetClient(baseURL string) TweetClient {
 
 func (c *tweetClient) GetUserTweets(ctx context.Context, userIDs []string) ([]domain.Tweet, error) {
 	log.Printf("Requesting tweets from tweet service")
+	
+	// Handle edge case where no user IDs are provided
+	if len(userIDs) == 0 {
+		log.Printf("No user IDs provided, returning empty tweets list")
+		return []domain.Tweet{}, nil
+	}
+	
 	log.Printf("Making request to: %s/tweets/following", c.baseURL)
 	
 	var tweets []domain.Tweet
@@ -44,6 +51,11 @@ func (c *tweetClient) GetUserTweets(ctx context.Context, userIDs []string) ([]do
 	if resp.StatusCode() != 200 {
 		log.Printf("Tweet service returned non-200 status: %d", resp.StatusCode())
 		return nil, fmt.Errorf("failed to get user tweets: status code %d", resp.StatusCode())
+	}
+
+	// Ensure we return an empty slice instead of nil if no tweets found
+	if tweets == nil {
+		tweets = []domain.Tweet{}
 	}
 
 	log.Printf("Successfully retrieved %d tweets from tweet service", len(tweets))

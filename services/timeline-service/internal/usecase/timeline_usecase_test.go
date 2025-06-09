@@ -136,7 +136,7 @@ func TestTimelineUseCase_GetTimeline(t *testing.T) {
 				Return(tt.mockFollowingUsers, tt.mockFollowingError)
 
 			// Set up tweet client mock only if we have following users and no following error
-			if tt.mockFollowingError == nil {
+			if tt.mockFollowingError == nil && len(tt.mockFollowingUsers) > 0 {
 				mockTweetClient.On("GetUserTweets", mock.Anything, mock.Anything).
 					Return(tt.mockTweets, tt.mockTweetsError)
 			}
