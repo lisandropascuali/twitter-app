@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /
 definitions:
   http.CreateTweetRequest:
     description: Request body for creating a tweet
@@ -6,12 +6,8 @@ definitions:
       content:
         example: Hello, this is my first tweet!
         type: string
-      user_id:
-        example: 123e4567-e89b-12d3-a456-426614174000
-        type: string
     required:
     - content
-    - user_id
     type: object
   http.ErrorResponse:
     description: Error response
@@ -39,7 +35,7 @@ definitions:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
     type: object
-host: localhost:8081
+host: localhost:8080
 info:
   contact:
     email: support@swagger.io
@@ -81,6 +77,48 @@ paths:
           schema:
             $ref: '#/definitions/http.ErrorResponse'
       summary: Create a new tweet
+      tags:
+      - tweets
+  /tweets/following:
+    get:
+      consumes:
+      - application/json
+      description: Get tweets from a list of user IDs with pagination
+      parameters:
+      - collectionFormat: csv
+        description: List of user IDs
+        in: query
+        items:
+          type: string
+        name: user_ids
+        required: true
+        type: array
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (default: 10)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/http.Tweet'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/http.ErrorResponse'
+      summary: Get tweets by user IDs
       tags:
       - tweets
 schemes:

@@ -69,6 +69,69 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/tweets/following": {
+            "get": {
+                "description": "Get tweets from a list of user IDs with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tweets"
+                ],
+                "summary": "Get tweets by user IDs",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "List of user IDs",
+                        "name": "user_ids",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size (default: 10)",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/http.Tweet"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/http.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -76,17 +139,12 @@ const docTemplate = `{
             "description": "Request body for creating a tweet",
             "type": "object",
             "required": [
-                "content",
-                "user_id"
+                "content"
             ],
             "properties": {
                 "content": {
                     "type": "string",
                     "example": "Hello, this is my first tweet!"
-                },
-                "user_id": {
-                    "type": "string",
-                    "example": "123e4567-e89b-12d3-a456-426614174000"
                 }
             }
         },
@@ -132,8 +190,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8081",
-	BasePath:         "/api/v1",
+	Host:             "localhost:8080",
+	BasePath:         "/",
 	Schemes:          []string{"http"},
 	Title:            "Tweet Service API",
 	Description:      "This is the tweet service API documentation.",
