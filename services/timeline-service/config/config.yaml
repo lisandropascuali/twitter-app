@@ -1,0 +1,8 @@
+server:
+  port: "8082"
+
+services:
+  user:
+    url: "http://localhost:8080"
+  tweet:
+    url: "http://localhost:8081" 

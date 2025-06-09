@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  timeline-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - GIN_MODE=release
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    external: true 

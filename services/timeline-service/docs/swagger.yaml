@@ -1,0 +1,70 @@
+basePath: /api/v1
+definitions:
+  domain.Timeline:
+    properties:
+      tweets:
+        items:
+          $ref: '#/definitions/domain.Tweet'
+        type: array
+    type: object
+  domain.Tweet:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8082
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is the timeline service API documentation.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Timeline Service API
+  version: "1.0"
+paths:
+  /timeline:
+    get:
+      consumes:
+      - application/json
+      description: Get the timeline of tweets from users that the current user follows
+      parameters:
+      - description: ID of the current user
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Timeline'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user timeline
+      tags:
+      - timeline
+schemes:
+- http
+swagger: "2.0"
