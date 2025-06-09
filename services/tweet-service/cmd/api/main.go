@@ -12,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/lisandro/challenge/services/tweet-service/config"
+	_ "github.com/lisandro/challenge/services/tweet-service/docs" // Import generated docs
 	"github.com/lisandro/challenge/services/tweet-service/internal/delivery/http"
 	dynamorepo "github.com/lisandro/challenge/services/tweet-service/internal/repository/dynamodb"
 	opensearchrepo "github.com/lisandro/challenge/services/tweet-service/internal/repository/opensearch"
@@ -31,8 +32,8 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8080
-// @BasePath /
+// @host localhost:8081
+// @BasePath /api/v1
 // @schemes http
 
 func main() {

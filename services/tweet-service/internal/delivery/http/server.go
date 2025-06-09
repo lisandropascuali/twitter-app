@@ -5,7 +5,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/swagger"
 	"github.com/lisandro/challenge/services/tweet-service/internal/domain"
 )
 
@@ -25,12 +24,6 @@ func NewServer(tu domain.TweetUseCase) *Server {
 		Format:     "[${time}] ${status} - ${latency} ${method} ${path}\n",
 		TimeFormat: "2006-01-02 15:04:05",
 		TimeZone:   "Local",
-	}))
-
-	// Add Swagger UI
-	app.Get("/swagger/*", swagger.New(swagger.Config{
-		URL:         "/swagger/doc.json",
-		DeepLinking: true,
 	}))
 	
 	// Create handlers with dependencies

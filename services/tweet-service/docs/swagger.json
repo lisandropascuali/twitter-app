@@ -18,8 +18,8 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
-    "basePath": "/",
+    "host": "localhost:8081",
+    "basePath": "/api/v1",
     "paths": {
         "/tweets": {
             "post": {
@@ -43,6 +43,13 @@
                         "schema": {
                             "$ref": "#/definitions/http.CreateTweetRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {

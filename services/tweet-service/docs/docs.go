@@ -46,6 +46,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/http.CreateTweetRequest"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the current user",
+                        "name": "X-User-ID",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -190,8 +197,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/",
+	Host:             "localhost:8081",
+	BasePath:         "/api/v1",
 	Schemes:          []string{"http"},
 	Title:            "Tweet Service API",
 	Description:      "This is the tweet service API documentation.",

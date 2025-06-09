@@ -1,4 +1,4 @@
-basePath: /
+basePath: /api/v1
 definitions:
   http.CreateTweetRequest:
     description: Request body for creating a tweet
@@ -35,7 +35,7 @@ definitions:
         example: 123e4567-e89b-12d3-a456-426614174000
         type: string
     type: object
-host: localhost:8080
+host: localhost:8081
 info:
   contact:
     email: support@swagger.io
@@ -61,6 +61,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/http.CreateTweetRequest'
+      - description: ID of the current user
+        in: header
+        name: X-User-ID
+        required: true
+        type: string
       produces:
       - application/json
       responses:

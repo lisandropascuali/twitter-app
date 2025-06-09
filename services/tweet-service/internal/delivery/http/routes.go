@@ -20,10 +20,10 @@ func RegisterRoutes(app *fiber.App, handler *Handler) {
 	// @Produce json
 	// @Param tweet body CreateTweetRequest true "Tweet object"
 	// @Header 200 {string} X-User-ID "ID of the current user"
-	// @Success 201 {object} map[string]interface{}
-	// @Failure 400 {object} map[string]string
-	// @Failure 500 {object} map[string]string
-	// @Router /tweets [post]
+	// @Success 201 {object} Tweet
+	// @Failure 400 {object} ErrorResponse
+	// @Failure 500 {object} ErrorResponse
+	// @Router /api/v1/tweets [post]
 	tweets.Post("", handler.CreateTweet)
 
 	// @Summary Get tweets by user IDs
@@ -34,10 +34,10 @@ func RegisterRoutes(app *fiber.App, handler *Handler) {
 	// @Param user_ids query []string true "List of user IDs"
 	// @Param page query int false "Page number (default: 1)"
 	// @Param page_size query int false "Page size (default: 10)"
-	// @Success 200 {array} domain.Tweet
-	// @Failure 400 {object} map[string]string
-	// @Failure 500 {object} map[string]string
-	// @Router /tweets/following [get]
+	// @Success 200 {array} Tweet
+	// @Failure 400 {object} ErrorResponse
+	// @Failure 500 {object} ErrorResponse
+	// @Router /api/v1/tweets/following [get]
 	tweets.Get("/following", handler.GetTweetsByUsersID)
 
 	// Health check endpoint

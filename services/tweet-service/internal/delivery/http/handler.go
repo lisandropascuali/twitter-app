@@ -60,7 +60,8 @@ func NewHandler(tweetUseCase domain.TweetUseCase) *Handler {
 // @Tags tweets
 // @Accept json
 // @Produce json
-// @Param tweet body CreateTweetRequest true "Tweet object"
+	// @Param tweet body CreateTweetRequest true "Tweet object"
+	// @Param X-User-ID header string true "ID of the current user"
 // @Success 201 {object} Tweet
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
