@@ -34,15 +34,6 @@ graph TB
             OS[(OpenSearch)]
         end
         
-        subgraph Message Bus
-            SNS[SNS Topics]
-            SQS[SQS Queues]
-        end
-        
-        subgraph Infrastructure
-            S3[S3 Storage]
-            CF[CloudFront CDN]
-        end
     end
     
     Client --> AG
@@ -57,10 +48,11 @@ graph TB
     
     TS --> DDB
     TS --> REDIS
+    TS --> OS
     
-    TLS --> OS
+    TLS --> US
+    TLS --> TS
     TLS --> REDIS
-    TLS --> DDB
     
     SNS --> SQS
     
@@ -75,11 +67,13 @@ sequenceDiagram
     participant AG as API Gateway
     participant TS as Tweet Service
     participant DDB as DynamoDB
+    participant OS as OpenSearch
     participant R as Redis Cache
 
     C->>AG: POST /tweets
     AG->>TS: Create Tweet
     TS->>DDB: Store Tweet
+    TS->>OS: Index Tweet
     TS->>R: Update Tweet Cache
     TS->>AG: Tweet Created
     AG->>C: Success Response
@@ -92,9 +86,9 @@ sequenceDiagram
     participant C as Client
     participant AG as API Gateway
     participant TLS as Timeline Service
+    participant US as User Service
+    participant TS as Tweet Service
     participant R as Redis Cache
-    participant OS as OpenSearch
-    participant DDB as DynamoDB
 
     C->>AG: GET /timeline
     AG->>TLS: Request Timeline
@@ -102,10 +96,10 @@ sequenceDiagram
     alt Cache Hit
         R->>TLS: Return Cached Timeline
     else Cache Miss
-        TLS->>OS: Query Timeline
-        OS->>TLS: Return Timeline IDs
-        TLS->>DDB: Fetch Tweet Details
-        DDB->>TLS: Return Tweet Data
+        TLS->>US: Get Following Users
+        US->>TLS: Return Following User IDs
+        TLS->>TS: Get Tweets for Users
+        TS->>TLS: Return Tweets
         TLS->>R: Update Cache
     end
     TLS->>AG: Timeline Data
@@ -155,32 +149,9 @@ graph LR
     
     TS --> DDB
     TS --> RC
+    TS --> OS
     
-    TLS --> OS
-    TLS --> DDB
+    TLS --> US
+    TLS --> TS
     TLS --> RC
 ```
-
-## Message Flow Architecture
-
-```mermaid
-graph LR
-    subgraph Publishers
-        TS[Tweet Service]
-        US[User Service]
-    end
-    
-    subgraph Message Bus
-        SNS[SNS Topics]
-        SQS[SQS Queues]
-    end
-    
-    subgraph Consumers
-        TLS[Timeline Service]
-    end
-    
-    TS --> SNS
-    US --> SNS
-    SNS --> SQS
-    SQS --> TLS
-``` 

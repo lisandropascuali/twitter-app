@@ -7,7 +7,7 @@ This project implements a scalable, resilient, and high-performance Twitter-like
 - **Programming Language**: Go (Golang)
 - **Databases**: 
   - DynamoDB (Tweet storage)
-  - OpenSearch (Timeline and search)
+  - OpenSearch (Tweet search and queries)
   - PostgreSQL (User data)
 - **Cloud Provider**: AWS
 - **Architecture Pattern**: Clean Architecture
@@ -31,17 +31,20 @@ This project implements a scalable, resilient, and high-performance Twitter-like
    - Tweet creation and management
    - Tweet validation
    - Tweet storage and retrieval
+   - Tweet search and queries
    - Technologies:
      - DynamoDB for tweet storage
+     - OpenSearch for tweet search and queries
      - Redis for hot tweets caching
 
 3. **Timeline Service**
    - Timeline generation and management
    - Feed aggregation
    - Technologies:
-     - OpenSearch for timeline queries and search
      - Redis for timeline caching
-     - DynamoDB for tweet data retrieval
+     - HTTP calls to User Service for following relationships
+     - HTTP calls to Tweet Service for tweet data
+     - Acts as an aggregator service
 
 4. **API Gateway**
    - Request routing
@@ -56,14 +59,15 @@ This project implements a scalable, resilient, and high-performance Twitter-like
 1. **Tweet Creation Flow**
    ```
    Client -> API Gateway -> Tweet Service -> DynamoDB
+                                        -> OpenSearch
                                         -> Redis Cache
    ```
 
 2. **Timeline Retrieval Flow**
    ```
    Client -> API Gateway -> Timeline Service -> Redis Cache
-                                           -> OpenSearch (if cache miss)
-                                           -> DynamoDB (for tweet details)
+                                           -> User Service (get following users)
+                                           -> Tweet Service (get tweets)
    ```
 
 ### Data Storage Strategy
@@ -74,15 +78,15 @@ This project implements a scalable, resilient, and high-performance Twitter-like
      - Optimized for tweet retrieval by ID
      - Enables fast access to individual tweets
    
-   - **OpenSearch**: Timeline and search optimization
+   - **OpenSearch**: Tweet search and queries
      - Stores tweet metadata and content for search
-     - Optimized for timeline queries and full-text search
-     - Enables efficient timeline generation and search capabilities
+     - Optimized for tweet queries and full-text search
+     - Enables efficient tweet search capabilities
 
 2. **Data Access Pattern**
    - Fanout on read strategy
-   - Timeline Service queries OpenSearch for timeline data
-   - DynamoDB provides tweet details on demand
+   - Timeline Service aggregates data from User and Tweet services
+   - Tweet Service uses OpenSearch for efficient tweet queries
    - Redis cache provides fast access to recent timelines
    - Eventual consistency model for timeline updates
 
