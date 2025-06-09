@@ -1,0 +1,288 @@
+type: collection.insomnia.rest/5.0
+name: Challenge Collection
+meta:
+  id: wrk_7b102feae665478292262bf8ef23b144
+  created: 1749303288586
+  modified: 1749444688508
+  description: ""
+collection:
+  - name: Users
+    meta:
+      id: fld_f5fb09f04fc94c308a27c8b8a6562bb6
+      created: 1749344388057
+      modified: 1749344388057
+      sortKey: -1749344388057
+      description: ""
+    children:
+      - url: localhost:8080/api/v1/users/223e4567-e89b-12d3-a456-426614174000/follow
+        name: Follow
+        meta:
+          id: req_cc469af5d25b431f8ead19b5096f10e9
+          created: 1749303288680
+          modified: 1749344401231
+          isPrivate: false
+          description: ""
+          sortKey: -1749344397062
+        method: POST
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+            id: pair_9cbb4507256248fea2fdbe3085ff84bf
+          - id: pair_079b0df5dcde4304874e8dec733361fa
+            name: x-user-id
+            value: 323e4567-e89b-12d3-a456-426614174000
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/v1/users/followers
+        name: Get followers
+        meta:
+          id: req_4bf2da06ee1f4d39b4200ca53ed29bd5
+          created: 1749310267921
+          modified: 1749437807730
+          isPrivate: false
+          description: ""
+          sortKey: -1749344397212
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+            id: pair_df361df5e7e7449ea6b4cff090373852
+          - id: pair_46552da6be364a02ade6415f371f1212
+            name: x-user-id
+            value: 123e4567-e89b-12d3-a456-426614174000
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/v1/users/223e4567-e89b-12d3-a456-426614174000/follow
+        name: UnFollow
+        meta:
+          id: req_df3c637af9c04761be490c5c63beeaaf
+          created: 1749321873796
+          modified: 1749443940382
+          isPrivate: false
+          description: ""
+          sortKey: -1749344397037
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+            id: pair_9cbb4507256248fea2fdbe3085ff84bf
+          - id: pair_079b0df5dcde4304874e8dec733361fa
+            name: x-user-id
+            value: 323e4567-e89b-12d3-a456-426614174000
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/v1/users/following
+        name: Get following
+        meta:
+          id: req_e0370a90ff2f4b159bce2065adb96284
+          created: 1749325802915
+          modified: 1749344403775
+          isPrivate: false
+          description: ""
+          sortKey: -1749344397262
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+            id: pair_df361df5e7e7449ea6b4cff090373852
+          - id: pair_46552da6be364a02ade6415f371f1212
+            name: x-user-id
+            value: 323e4567-e89b-12d3-a456-426614174000
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/v1/users
+        name: Create User
+        meta:
+          id: req_10b00acc5cec4d599da417c376bd695b
+          created: 1749443936423
+          modified: 1749443957203
+          isPrivate: false
+          description: ""
+          sortKey: -1749344397362
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"username": "test"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.2.0
+            id: pair_9cbb4507256248fea2fdbe3085ff84bf
+          - id: pair_079b0df5dcde4304874e8dec733361fa
+            name: x-user-id
+            value: 323e4567-e89b-12d3-a456-426614174000
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: localhost:8080/api/v1/users
+        name: Get all users
+        meta:
+          id: req_37f93c6a4d5248e89fe1eea5f338544f
+          created: 1749443971638
+          modified: 1749443981461
+          isPrivate: false
+          description: ""
+          sortKey: -1749344397312
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+            id: pair_df361df5e7e7449ea6b4cff090373852
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Tweets
+    meta:
+      id: fld_7b0eb857a51b4dffb1174df4245b921c
+      created: 1749344417753
+      modified: 1749344417753
+      sortKey: -1749344417753
+      description: ""
+    children:
+      - url: http://localhost:8081/api/v1/tweets
+        name: Create Tweet
+        meta:
+          id: req_7e8a9470df7144919e023efce2d0fe96
+          created: 1749344468381
+          modified: 1749344588667
+          isPrivate: false
+          description: ""
+          sortKey: -1749344455172
+        method: POST
+        body:
+          text: '{     "user_id": "123e4567-e89b-12d3-a456-426614174000",     "content":
+            "Hello, this is my first tweet!"   }'
+          mimeType: application/json
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8081/api/v1/tweets/following
+        name: Get Tweets By Users ID
+        meta:
+          id: req_e064458575da4e21b3fa9259e07e144f
+          created: 1749428667898
+          modified: 1749428755448
+          isPrivate: false
+          description: ""
+          sortKey: -1749344426217
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        parameters:
+          - id: pair_94b5921c9cf94a978d20a750dc4b1ac0
+            name: user_ids
+            value: 123e4567-e89b-12d3-a456-426614174000
+            description: ""
+            disabled: false
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Timeline
+    meta:
+      id: fld_2e7c70f06b9a4cc29b92fdfcac5591b0
+      created: 1749442880611
+      modified: 1749442880611
+      sortKey: -1749442880611
+      description: ""
+    children:
+      - url: http://localhost:8080/api/v1/timeline
+        name: Get user timeline
+        meta:
+          id: req_df33dc7a87ac47d9a0402c028e767a33
+          created: 1749442901484
+          modified: 1749442919790
+          isPrivate: false
+          description: ""
+          sortKey: -1749442901484
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.2.0
+          - name: x-user-id
+            value: 123e4567-e89b-12d3-a456-426614174000
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_27040dc0b70151581ea38c8be4aff3a8338c59df
+    created: 1749303288592
+    modified: 1749303288592
+environments:
+  name: Base Environment
+  meta:
+    id: env_27040dc0b70151581ea38c8be4aff3a8338c59df
+    created: 1749303288590
+    modified: 1749303288590
+    isPrivate: false
