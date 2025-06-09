@@ -1,4 +1,4 @@
-.PHONY: help setup up down restart build run test clean logs check-deps install-deps setup-infra run-all stop-all
+.PHONY: help setup up down restart build run test clean logs check-deps install-deps setup-infra run-all stop-all seed-data populate-all
 
 # Colors for output
 GREEN := \033[0;32m
@@ -25,6 +25,7 @@ help:
 	@echo "  make test           - Run tests for all services"
 	@echo "  make clean          - Clean up all build artifacts and containers"
 	@echo "  make logs           - Show logs from all services"
+	@echo "  make health         - Check service health"
 	@echo ""
 	@echo "$(YELLOW)Service URLs (after running):$(NC)"
 	@echo "  User Service:     http://localhost:8080"
@@ -61,7 +62,7 @@ install-deps:
 	fi
 	@echo "$(GREEN)✓ Dependencies installed$(NC)"
 
-# Setup infrastructure (databases, tables, indexes)
+# Setup infrastructure (databases, tables, indexes) WITHOUT data
 setup-infra:
 	@echo "$(GREEN)Setting up infrastructure...$(NC)"
 	@echo "$(YELLOW)Starting PostgreSQL for User Service...$(NC)"
@@ -70,8 +71,8 @@ setup-infra:
 	@cd services/tweet-service && make up
 	@echo "$(YELLOW)Waiting for services to be ready...$(NC)"
 	@sleep 10
-	@echo "$(YELLOW)Setting up User Service database...$(NC)"
-	@cd services/user-service && make seed
+	@echo "$(YELLOW)Setting up User Service database schema...$(NC)"
+	@cd services/user-service && make migrate
 	@echo "$(YELLOW)Setting up Tweet Service infrastructure...$(NC)"
 	@cd services/tweet-service && make create-table create-opensearch-index
 	@echo "$(GREEN)✓ Infrastructure setup complete$(NC)"
@@ -132,9 +133,11 @@ run-all:
 # Stop all running services
 stop-all:
 	@echo "$(GREEN)Stopping all services...$(NC)"
-	@pkill -f "user-service" || true
-	@pkill -f "tweet-service" || true
-	@pkill -f "timeline-service" || true
+	@echo "$(YELLOW)Killing processes on service ports...$(NC)"
+	@lsof -ti :8080 | xargs kill -9 2>/dev/null || true
+	@lsof -ti :8081 | xargs kill -9 2>/dev/null || true
+	@lsof -ti :8082 | xargs kill -9 2>/dev/null || true
+	@echo "$(YELLOW)Stopping Docker containers...$(NC)"
 	@make down
 	@echo "$(GREEN)✓ All services stopped$(NC)"
 

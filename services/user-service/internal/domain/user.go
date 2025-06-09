@@ -3,7 +3,7 @@ package domain
 // User represents a user in the system
 type User struct {
     ID       string `json:"id" gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-    Username string `json:"username" gorm:"type:varchar(255);uniqueIndex:idx_users_username;not null"`
+    Username string `json:"username" gorm:"type:varchar(255);unique;not null"`
 }
 
 // CreateUserRequest represents the request to create a new user

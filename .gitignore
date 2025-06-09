@@ -1,0 +1,4 @@
+*.log
+services/timeline-service/timeline-service
+services/tweet-service/bin/tweet-service
+services/user-service/bin/user-service
