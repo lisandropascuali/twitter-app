@@ -1,6 +1,15 @@
 basePath: /api/v1
 definitions:
-  github_com_lisandro_challenge_services_user-service_internal_domain.User:
+  domain.CreateUserRequest:
+    properties:
+      username:
+        maxLength: 50
+        minLength: 3
+        type: string
+    required:
+    - username
+    type: object
+  domain.User:
     properties:
       id:
         type: string
@@ -21,6 +30,66 @@ info:
   title: User Service API
   version: "1.0"
 paths:
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all users in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/domain.User'
+              type: array
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided information
+      parameters:
+      - description: User information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.User'
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - users
   /users/{followedID}/follow:
     delete:
       consumes:
@@ -117,7 +186,7 @@ paths:
           schema:
             additionalProperties:
               items:
-                $ref: '#/definitions/github_com_lisandro_challenge_services_user-service_internal_domain.User'
+                $ref: '#/definitions/domain.User'
               type: array
             type: object
         "401":
@@ -154,7 +223,7 @@ paths:
           schema:
             additionalProperties:
               items:
-                $ref: '#/definitions/github_com_lisandro_challenge_services_user-service_internal_domain.User'
+                $ref: '#/definitions/domain.User'
               type: array
             type: object
         "401":

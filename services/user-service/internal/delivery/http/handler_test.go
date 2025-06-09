@@ -37,6 +37,22 @@ func (m *MockUserUsecase) GetFollowers(userID string) ([]domain.User, error) {
 	return args.Get(0).([]domain.User), args.Error(1)
 }
 
+func (m *MockUserUsecase) CreateUser(req domain.CreateUserRequest) (*domain.User, error) {
+	args := m.Called(req)
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+func (m *MockUserUsecase) GetAllUsers() ([]domain.User, error) {
+	args := m.Called()
+	return args.Get(0).([]domain.User), args.Error(1)
+}
+
+func (m *MockUserUsecase) GetUser(id string) (*domain.User, error) {
+	args := m.Called(id)
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+
 func setupTest() (*fiber.App, *MockUserUsecase, *UserHandler) {
 	app := fiber.New()
 	mockUsecase := new(MockUserUsecase)

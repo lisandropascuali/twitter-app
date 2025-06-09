@@ -34,6 +34,22 @@ func (m *MockUserRepository) GetFollowers(userID string) ([]domain.User, error) 
 	return args.Get(0).([]domain.User), args.Error(1)
 }
 
+func (m *MockUserRepository) CreateUser(req domain.CreateUserRequest) (*domain.User, error) {
+	args := m.Called(req)
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) GetAllUsers() ([]domain.User, error) {
+	args := m.Called()
+	return args.Get(0).([]domain.User), args.Error(1)
+}
+
+func (m *MockUserRepository) GetUser(id string) (*domain.User, error) {
+	args := m.Called(id)
+	return args.Get(0).(*domain.User), args.Error(1)
+}
+
+
 func TestUserUsecase_Follow(t *testing.T) {
 	tests := []struct {
 		name        string

@@ -70,4 +70,22 @@ func (r *PostgresRepository) GetFollowers(userID string) ([]domain.User, error) 
 		users = append(users, user)
 	}
 	return users, nil
-} 
+}
+
+func (r *PostgresRepository) CreateUser(req domain.CreateUserRequest) (*domain.User, error) {
+	user := domain.User{
+		Username: req.Username,
+	}
+	if err := r.db.Create(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *PostgresRepository) GetAllUsers() ([]domain.User, error) {
+	var users []domain.User
+	if err := r.db.Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}

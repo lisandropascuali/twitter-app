@@ -13,6 +13,8 @@ type PersistentRepository interface {
 	GetFollowing(userID string) ([]domain.User, error)
 	GetFollowers(userID string) ([]domain.User, error)
 	GetUser(id string) (*domain.User, error)
+	GetAllUsers() ([]domain.User, error)
+	CreateUser(req domain.CreateUserRequest) (*domain.User, error)
 }
 
 // CacheRepository defines the interface for caching storage (e.g., Redis)
@@ -139,4 +141,25 @@ func (r *compositeRepository) GetFollowers(userID string) ([]domain.User, error)
 	}
 
 	return followers, nil
+}
+
+func (r *compositeRepository) CreateUser(req domain.CreateUserRequest) (*domain.User, error) {
+	// Create user in persistent storage
+	user, err := r.persistent.CreateUser(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache the newly created user
+	if err := r.cache.CacheUser(user); err != nil {
+		log.Printf("Failed to cache newly created user: %v", err)
+	}
+
+	return user, nil
+}
+
+func (r *compositeRepository) GetAllUsers() ([]domain.User, error) {
+	// For GetAllUsers, we'll go directly to persistent storage
+	// as caching all users might not be efficient
+	return r.persistent.GetAllUsers()
 } 

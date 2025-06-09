@@ -34,4 +34,18 @@ func (u *userUsecase) GetFollowing(userID string) ([]domain.User, error) {
 // GetFollowers returns the list of users that follow a user
 func (u *userUsecase) GetFollowers(userID string) ([]domain.User, error) {
 	return u.repo.GetFollowers(userID)
-} 
+}
+
+func (u *userUsecase) CreateUser(req domain.CreateUserRequest) (*domain.User, error) {
+	return u.repo.CreateUser(req)
+}
+
+// GetAllUsers returns all users in the system
+func (u *userUsecase) GetAllUsers() ([]domain.User, error) {
+	return u.repo.GetAllUsers()
+}
+
+// GetUser returns a user by ID
+func (u *userUsecase) GetUser(id string) (*domain.User, error) {
+	return u.repo.GetUser(id)
+}

@@ -18,6 +18,62 @@ func NewUserHandler(uu domain.UserUsecase) *UserHandler {
 	}
 }
 
+// GetAllUsers godoc
+// @Summary Get all users
+// @Description Get a list of all users in the system
+// @Tags users
+// @Accept json
+// @Produce json
+// @Success 200 {object} map[string][]domain.User
+// @Failure 500 {object} map[string]string
+// @Router /users [get]
+func (h *UserHandler) GetAllUsers(c *fiber.Ctx) error {
+	log.Println("Getting all users")
+	users, err := h.userUsecase.GetAllUsers()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get users",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"users": users,
+	})
+}
+
+// CreateUser godoc
+// @Summary Create a new user
+// @Description Create a new user with the provided information
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body domain.CreateUserRequest true "User information"
+// @Success 201 {object} map[string]domain.User
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /users [post]
+func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
+	var req domain.CreateUserRequest
+	
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	log.Printf("Creating new user: %+v", req)
+	user, err := h.userUsecase.CreateUser(req)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create user",
+		})
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"user": user,
+	})
+}
+
 // Follow godoc
 // @Summary Follow a user
 // @Description Follow another user by their ID
