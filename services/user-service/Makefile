@@ -14,7 +14,7 @@ build:
 	go build -o bin/user-service cmd/api/main.go
 
 run: up wait-for-postgres
-	go run cmd/api/main.go
+	DB_USER=user_service DB_PASSWORD=user_service_pass DB_NAME=user_service_db go run cmd/api/main.go
 
 # Testing commands
 test:
