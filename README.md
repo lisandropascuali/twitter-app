@@ -1,5 +1,55 @@
 # Twitter-like Platform Architecture
 
+## Quick Start 🚀
+
+For evaluators and developers, you can get the entire platform running with just a few commands:
+
+### Prerequisites
+- Docker & Docker Compose
+- Go (1.19+)
+- AWS CLI (for local DynamoDB and OpenSearch)
+- Make
+
+### One-Command Setup
+```bash
+# Complete setup and run all services
+make setup && make run-all
+```
+
+### Step-by-Step Setup
+```bash
+# 1. Check dependencies
+make check-deps
+
+# 2. Install missing dependencies (macOS only)
+make install-deps
+
+# 3. Setup infrastructure (databases, tables, indexes)
+make setup-infra
+
+# 4. Build all services
+make build
+
+# 5. Run all services
+make run-all
+```
+
+### Available Commands
+- `make help` - Show all available commands
+- `make setup` - Complete setup (deps + infra + build)
+- `make run-all` - Run all services
+- `make stop-all` - Stop all services
+- `make logs` - Show logs from all services
+- `make test` - Run all tests
+- `make clean` - Clean up everything
+- `make health` - Check service health
+
+### Service URLs
+After running `make run-all`, the services will be available at:
+- **User Service**: http://localhost:8080
+- **Tweet Service**: http://localhost:8081  
+- **Timeline Service**: http://localhost:8082
+
 ## Overview
 This project implements a scalable, resilient, and high-performance Twitter-like platform using microservices architecture. The system is designed to handle millions of users while maintaining optimal read performance and eventual consistency.
 
